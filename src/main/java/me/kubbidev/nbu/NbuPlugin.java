@@ -95,7 +95,12 @@ public final class NbuPlugin extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void a(BlockPistonEvent e) {
+    public void a(BlockPistonExtendEvent e) {
+        e.setCancelled(true);
+    }
+
+    @EventHandler
+    public void a(BlockPistonRetractEvent e) {
         e.setCancelled(true);
     }
 

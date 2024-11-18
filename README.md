@@ -27,7 +27,7 @@ NoBlockUpdate uses Gradle to handle dependencies & building.
 #### Compiling from source
 
 ```sh
-git clone git@gitlab.com:deplored/noblockupdate.git
+git clone git@gitlab.com:kubbidev/noblockupdate.git
 cd noblockupdate/
 ./gradlew build
 ```

@@ -1,4 +1,4 @@
-name: Hollow API
+name: NoBlockUpdate
 version: ${pluginVersion}
 description: A Minecraft plugin that prevents all kinds of world block updates and physical events.
 author: kubbidev

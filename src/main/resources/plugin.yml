@@ -2,8 +2,8 @@ name: NoBlockUpdate
 version: ${pluginVersion}
 description: A Minecraft plugin that prevents all kinds of world block updates and physical events.
 author: kubbidev
-website: https://kubbidev.com
-main: me.kubbidev.nbu.NbuPlugin
+website: https://kubbidev.me
+main: me.kubbidev.nbu.NoBlockUpdatePlugin
 
 # Mark the plugin as 1.13 compatible to avoid CB having to perform quite as much unnecessary
 # remapping when the plugin is loaded.

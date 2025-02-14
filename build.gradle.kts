@@ -1,21 +1,6 @@
 import org.gradle.api.tasks.testing.logging.TestLogEvent
 import java.io.ByteArrayOutputStream
 
-/**
- * Returns the string itself if it's not null or blank. Otherwise, returns the result
- * of the provided [defaultValueProvider] function.
- *
- * @param defaultValueProvider A function that provides a default value when the string is null or blank.
- * @return The original string if it's not null or blank; otherwise, the result of [defaultValueProvider].
- */
-infix fun String?.ifNullOrBlank(defaultValueProvider: () -> String?): String? {
-    return if (this.isNullOrBlank()) {
-        defaultValueProvider()
-    } else {
-        this
-    }
-}
-
 plugins {
     id("java")
     id("java-library")
@@ -31,24 +16,26 @@ base {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
     withSourcesJar()
 }
 
 repositories {
     mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/")
+    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
 }
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.4-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:1.8.8-R0.1-SNAPSHOT")
 
-    // tests
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.10.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.10.0")
-    testImplementation("org.testcontainers:junit-jupiter:1.19.8")
+    // test
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.11.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.11.4")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.11.4")
+    testImplementation("org.testcontainers:junit-jupiter:1.20.4")
+    testImplementation("org.mockito:mockito-core:5.14.2")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.14.2")
 }
 
 fun determinePatchVersion(): Int {
@@ -75,33 +62,47 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             artifactId = "noblockupdate"
+            version = releaseVersion
+
             from(components["java"])
+            pom {
+                name = "NoBlockUpdate"
+                description = "A Minecraft plugin that prevents all kinds of world block updates and physical events."
+                url = "https://github.com/kubbidev/NoBlockUpdate"
+
+                licenses {
+                    license {
+                        name = "CC BY-NC-SA 4.0"
+                        url = "https://creativecommons.org/licenses/by-nc-sa/4.0/"
+                    }
+                }
+
+                developers {
+                    developer {
+                        id = "kubbidev"
+                        name = "kubbi"
+                        url = "https://kubbidev.me"
+                    }
+                }
+
+                issueManagement {
+                    system = "GitHub"
+                    url = "https://github.com/kubbidev/NoBlockUpdate/issues"
+                }
+            }
         }
     }
     repositories {
-        mavenLocal()
-//        maven(url = "https://kubbidev.com/nexus/repository/maven-releases/") {
-//            name = "kubbidev-releases"
-//            credentials(PasswordCredentials::class) {
-//                username = System.getenv("GRADLE_KUBBIDEV_RELEASES_USER").ifNullOrBlank {
-//                    property("kubbidev-releases-user") as String?
-//                }
-//                password = System.getenv("GRADLE_KUBBIDEV_RELEASES_PASS").ifNullOrBlank {
-//                    property("kubbidev-releases-pass") as String?
-//                }
-//            }
-//        }
-//        maven(url = "https://nexus.guill.productions/repository/uhcworld-libs/") {
-//            name = "uhcworld-internal"
-//            credentials(PasswordCredentials::class) {
-//                username = System.getenv("GRADLE_UW_INTERNAL_USER").ifNullOrBlank {
-//                    property("uhcworld-internal-user") as String?
-//                }
-//                password = System.getenv("GRADLE_UW_INTERNAL_PASSWORD").ifNullOrBlank {
-//                    property("uhcworld-internal-password") as String?
-//                }
-//            }
-//        }
+        maven(url = "https://nexus.kubbidev.me/repository/maven-releases/") {
+            name = "kubbidev-releases"
+            credentials(PasswordCredentials::class) {
+                username = System.getenv("GRADLE_KUBBIDEV_RELEASES_USER")
+                    ?: property("kubbidev-releases-user") as String?
+
+                password = System.getenv("GRADLE_KUBBIDEV_RELEASES_PASS")
+                    ?: property("kubbidev-releases-pass") as String?
+            }
+        }
     }
 }
 
@@ -116,7 +117,11 @@ tasks.processResources {
 }
 
 tasks.shadowJar {
+    archiveFileName = "NoBlockUpdate-${projectVersion}.jar"
     mergeServiceFiles()
+    dependencies {
+        include(dependency("me.kubbidev:.*"))
+    }
 }
 
 tasks.publish {

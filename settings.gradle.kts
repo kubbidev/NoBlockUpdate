@@ -1,2 +1,1 @@
-rootProject.name = "noblockupdate"
-
+rootProject.name = "NoBlockUpdate"
